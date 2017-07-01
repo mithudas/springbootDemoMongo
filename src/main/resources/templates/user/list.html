@@ -29,6 +29,7 @@
         <td th:text="${user.gender}"></td>
         <td th:text="${user.age}"></td>
         <td><a th:href="@{/updateUser(id=${user.id})}">Update</a></td>
+        <td><a th:href="@{/deleteUser(id=${user.id})}">Delete</a></td>
     </tr>
     </tbody>
 </table>

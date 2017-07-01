@@ -49,9 +49,11 @@ public class UserController {
         return "redirect:listUsers";
     }
 
-    @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
-    public String updateUser() {
-        return "/user/createOrUpdate";
+    @RequestMapping(value = "/deleteUser", method = RequestMethod.GET)
+    public String deleteUser(@RequestParam String id) {
+        userMongoRepository.delete(id);
+        return "redirect:listUsers";
+
     }
 
 }
