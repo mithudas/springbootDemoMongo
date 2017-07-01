@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title> Add Author</title>
+</head>
+<body>
+
+<a href="/home" >Show authors</a>
+
+Add Authors:
+<form action="addAuthor" method="post">
+    FirstName <input type="text" name="firstName"  th:value="${author.firstName}" /><br />
+    Last Name<input type="text" id="lastName" name="lastName" th:value="${author.lastName}" /><br />
+    Gender <input type="text" id="gender" name="gender" th:value="${author.gender}" /><br />
+    Age <input type="text" id="age" name="age" th:value="${author.age}" /><br />
+    <input type="submit"/>
+
+</form>
+
+</body>
+
+</html>

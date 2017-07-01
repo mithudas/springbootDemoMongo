@@ -7,8 +7,8 @@ import java.util.Date;
 /**
  * Created by mithu on 25/6/17.
  */
-@Document(collection = "'user'")
-public class User {
+@Document(collection = "'author'")
+public class Author {
     private String id;
     private String firstName;
     private String lastName;
@@ -16,8 +16,17 @@ public class User {
     private Integer age;
 
 
-    public User() {
+    public Author() {
     }
+
+
+    public Author(Author author) {
+        this.firstName = author.firstName;
+        this.lastName = author.lastName;
+        this.gender = author.gender;
+        this.age = author.age;
+    }
+
 
     public String getId() {
         return id;
@@ -61,7 +70,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "Author{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", gender='" + gender + '\'' +
