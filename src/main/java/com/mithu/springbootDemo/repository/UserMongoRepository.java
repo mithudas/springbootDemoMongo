@@ -6,4 +6,4 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by mithu on 25/6/17.
  */
-public interface UserMongoRepository extends CrudRepository<User, String> { }
+public interface UserMongoRepository extends CrudRepository<User, String> {}

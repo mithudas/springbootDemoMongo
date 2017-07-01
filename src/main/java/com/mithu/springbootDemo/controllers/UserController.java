@@ -5,9 +5,7 @@ import com.mithu.springbootDemo.repository.UserMongoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by mithu on 25/6/17.
@@ -18,34 +16,42 @@ public class UserController {
     @Autowired
     UserMongoRepository userMongoRepository;
 
-    @RequestMapping("/home")
+    @RequestMapping("/listUsers")
     public String list(Model model) {
-
-        System.out.printf("index>>>>");
         model.addAttribute("userList", userMongoRepository.findAll());
-        return "home";
+        return "/user/list";
     }
 
-    @RequestMapping(value = "/createUser", method = RequestMethod.GET)
-    public  String createUser( Model model){
-        model.addAttribute("firstName", "mithu");
-        model.addAttribute("lastName", "");
-        model.addAttribute("gender", "");
-        model.addAttribute("age", "");
-        return "/user/addUser";
+    @RequestMapping(value = {"/createUser", "/updateUser"}, method = RequestMethod.GET)
+    public String createUser(Model model, @RequestParam(required = false) String id) {
+        User user;
+        if (id != null) {
+            user = userMongoRepository.findOne(id);
+            System.out.println("${user}" + user.toString());
+
+        } else {
+            user = new User();
+        }
+        model.addAttribute("user", user);
+        return "/user/createOrUpdate";
     }
 
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
     public String addUser(@ModelAttribute User user) {
-
-        System.out.println("inside adduser");
-        userMongoRepository.save(user);
-        return "redirect:home";
+        String userId = user.getId();
+        if (userId != null) {
+            User existingUser = userMongoRepository.findOne(userId);
+            existingUser = user;
+            userMongoRepository.save(existingUser);
+        } else {
+            userMongoRepository.save(user);
+        }
+        return "redirect:listUsers";
     }
 
-
-    public String updateUser(){
-        return  "/user/addUser";
+    @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
+    public String updateUser() {
+        return "/user/createOrUpdate";
     }
 
 }

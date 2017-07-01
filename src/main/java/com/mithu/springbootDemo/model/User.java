@@ -9,7 +9,7 @@ import java.util.Date;
  */
 @Document(collection = "'user'")
 public class User {
-
+    private String id;
     private String firstName;
     private String lastName;
     private String gender;
@@ -17,6 +17,14 @@ public class User {
 
 
     public User() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getFirstName() {

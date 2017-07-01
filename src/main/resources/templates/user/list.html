@@ -28,8 +28,7 @@
         <td th:text="${user.lastName}"></td>
         <td th:text="${user.gender}"></td>
         <td th:text="${user.age}"></td>
-        <td ><a href="/updateUser" /> Update</td>
-        <td style="font-style: italic; color: blue; cursor: pointer" onclick="window.location.href = '/updateUser'">Update</td>
+        <td><a th:href="@{/updateUser(id=${user.id})}">Update</a></td>
     </tr>
     </tbody>
 </table>
