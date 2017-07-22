@@ -3,56 +3,84 @@ package com.mithu.springbootDemo.controllers;
 import com.mithu.springbootDemo.model.User;
 import com.mithu.springbootDemo.repository.UserMongoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ResourceNotFoundException;
+import org.springframework.cglib.core.CollectionUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * Created by mithu on 25/6/17.
  */
-@Controller
+@RestController
 public class UserController {
 
     @Autowired
     UserMongoRepository userMongoRepository;
 
     @RequestMapping("/listUsers")
-    public String list(Model model) {
-        model.addAttribute("userList", userMongoRepository.findAll());
-        return "/user/list";
+    public List<User> list(Model model) {
+        List<User> userList = new ArrayList<>();
+        userMongoRepository.findAll().iterator().forEachRemaining(userList::add);
+        return userList;
     }
 
-    @RequestMapping(value = {"/createUser", "/updateUser"}, method = RequestMethod.GET)
-    public String createUser(Model model, @RequestParam(required = false) String id) {
+    @RequestMapping(value = "/getUser", method = RequestMethod.GET)
+    public ResponseEntity<User> getUser(@RequestParam(required = false) String id) {
         User user;
         if (id != null) {
             user = userMongoRepository.findOne(id);
-            System.out.println("${user}" + user.toString());
-
+            return ResponseEntity.ok(user);
         } else {
-            user = new User();
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        model.addAttribute("user", user);
-        return "/user/createOrUpdate";
     }
 
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
-    public String addUser(@ModelAttribute User user) {
-        String userId = user.getId();
-        if (userId != null) {
-            User existingUser = userMongoRepository.findOne(userId);
-            existingUser = user;
-            userMongoRepository.save(existingUser);
-        } else {
+    public ResponseEntity saveUser(@RequestBody User user) {
+        Random random = new Random();
+        int value = random.nextInt(2000);
+        if (user.getId() == null) {
+            user.setId(String.valueOf(value));
             userMongoRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User saved");
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exist");
         }
-        return "redirect:listUsers";
     }
 
-    @RequestMapping(value = "/deleteUser", method = RequestMethod.GET)
-    public String deleteUser(@RequestParam String id) {
-        userMongoRepository.delete(id);
-        return "redirect:listUsers";
+    @RequestMapping(value = "/user/{userId}", method = RequestMethod.PUT)
+    public ResponseEntity updateUser(@RequestBody User user, @PathVariable String userId) {
+        User existingUser = userMongoRepository.findOne(userId);
+        if (existingUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+
+        } else {
+            user.setId(userId);
+            userMongoRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("updated user");
+        }
+
+    }
+
+    @RequestMapping(value = "/user/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteUser(@PathVariable String userId) {
+        User existingUser = userMongoRepository.findOne(userId);
+        if (existingUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+
+        } else {
+            userMongoRepository.delete(userId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("delete");
+
+        }
 
     }
 
